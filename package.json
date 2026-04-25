@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-template",
-  "version": "0.1.0",
+  "name": "ai-video-edit-platform",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,14 @@
   "dependencies": {
     "next": "^16.1.3",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "ws": "^8.18.3",
+    "fluent-ffmpeg": "^2.1.2",
+    "multer": "^2.0.2",
+    "uuid": "^13.0.0",
+    "fs-extra": "^11.3.2",
+    "node-duration": "^1.0.0",
+    "@heroicons/react": "^2.2.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
@@ -22,6 +29,10 @@
     "@tailwindcss/postcss": "^4.1.17",
     "tailwindcss": "^4.1.17",
     "eslint": "^9.39.1",
-    "eslint-config-next": "^16.0.0"
+    "eslint-config-next": "^16.0.0",
+    "@types/ws": "^8.18.1",
+    "@types/multer": "^1.4.12",
+    "@types/uuid": "^10.0.0",
+    "@types/fs-extra": "^11.0.4"
   }
 }
