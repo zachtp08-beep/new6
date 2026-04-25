@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { UploadZone } from '@/components/UploadZone/UploadZone';
+import { VideoEditorPanel } from '@/components/VideoEditor/VideoEditorPanel';
 import { ProcessingStatus } from '@/components/VideoProcessing/ProcessingStatus';
 import { ProgressBar } from '@/components/ProgressBar/ProgressBar';
-import { VideoEditorPanel } from '@/components/VideoEditor/VideoEditorPanel';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('upload');
   const [stats, setStats] = useState<any>(null);
 
   const fetchStats = async () => {
@@ -21,9 +19,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchStats();
-    const interval = setInterval(fetchStats, 5000);
+    const fetchStatsAsync = () => {
+      fetchStats();
+    };
+    fetchStatsAsync();
+    const interval = setInterval(fetchStatsAsync, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -67,49 +67,9 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ProcessingStatus />
         <ProgressBar />
-        <VideoEditorPanel />
 
-        <div className="mt-8">
-          <div className="border-b border-gray-700">
-            <nav className="flex space-x-8" aria-label="Tabs">
-              <button
-                onClick={() => setActiveTab('upload')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'upload'
-                    ? 'border-blue-500 text-blue-500'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
-                }`}
-              >
-                Upload Videos
-              </button>
-              <button
-                onClick={() => setActiveTab('queue')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'queue'
-                    ? 'border-blue-500 text-blue-500'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
-                }`}
-              >
-                Queue
-              </button>
-              <button
-                onClick={() => setActiveTab('history')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'history'
-                    ? 'border-blue-500 text-blue-500'
-                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
-                }`}
-              >
-                History
-              </button>
-            </nav>
-          </div>
-
-          <div className="mt-6">
-            {activeTab === 'upload' && <UploadZone />}
-            {activeTab === 'queue' && <div className="p-8 text-center text-gray-400">Queue management (server component)</div>}
-            {activeTab === 'history' && <div className="p-8 text-center text-gray-400">Processing history (server component)</div>}
-          </div>
+        <div className="mt-6">
+          <VideoEditorPanel />
         </div>
       </main>
     </div>
