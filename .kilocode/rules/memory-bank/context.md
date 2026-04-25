@@ -1,87 +1,78 @@
-# Active Context: Next.js Starter Template
+# Current State
 
-## Current State
+## Project: AI Video Edit Platform
+A comprehensive Next.js web application that serves as an automated video editing platform designed for AI system integration.
 
-**Template Status**: ✅ Ready for development
+## Recent Changes (This Session)
+- ✅ Complete backend API infrastructure (5 endpoints: upload, process, batch, status, retry)
+- ✅ FFmpeg processing library with 4 operations: clipping, subtitles, aspect ratio conversion, split-screen
+- ✅ Job queue management system with concurrent processing and retry logic
+- ✅ WebSocket server for real-time progress updates
+- ✅ File storage system for uploads and processed videos
+- ✅ Client-side UI: Upload zone with drag-drop, video editor panel, progress indicators
+- ✅ Professional dark-mode UI with Tailwind CSS
+- ✅ TypeScript type safety throughout
+- ✅ All builds passing (lint, typecheck, build)
 
-The template is a clean Next.js 16 starter with TypeScript and Tailwind CSS 4. It's ready for AI-assisted expansion to build any type of application.
+## Architecture
 
-## Recently Completed
+### Backend (Server-Side)
+- **API Routes**: `/api/upload`, `/api/process`, `/api/batch`, `/api/status`, `/api/retry`
+- **Job Queue**: Concurrent processing with priority, retry logic, WebSocket notifications
+- **FFmpeg Processor**: Clip videos, add subtitles, convert aspect ratios (9:16 for iPhone), split-screen layouts
+- **Storage**: File upload handling with UUID-based naming, organized directories
+- **WebSocket**: Real-time progress broadcasting to connected clients
 
-- [x] Base Next.js 16 setup with App Router
-- [x] TypeScript configuration with strict mode
-- [x] Tailwind CSS 4 integration
-- [x] ESLint configuration
-- [x] Memory bank documentation
-- [x] Recipe system for common features
+### Frontend (Client-Side)
+- **Upload Zone**: Drag-and-drop video upload with batch support
+- **Video Editor Panel**: Operation selectors (clipping duration, aspect ratios, layouts, subtitles)
+- **Progress Indicators**: Live processing status, queue stats, visual progress bars
+- **Tabs**: Upload, Queue, History navigation
+- **Design**: Dark gradient theme, professional video editor aesthetic
 
-## Current Structure
+### Technology Stack
+- Next.js 16.1.3 (App Router)
+- TypeScript
+- Tailwind CSS 4
+- FFmpeg (fluent-ffmpeg)
+- WebSocket (ws)
+- UUID, fs-extra, multer
 
-| File/Directory | Purpose | Status |
-|----------------|---------|--------|
-| `src/app/page.tsx` | Home page | ✅ Ready |
-| `src/app/layout.tsx` | Root layout | ✅ Ready |
-| `src/app/globals.css` | Global styles | ✅ Ready |
-| `.kilocode/` | AI context & recipes | ✅ Ready |
+## Key Features
+1. **Batch Processing**: Queue multiple videos for sequential automated processing
+2. **Smart Clipping**: Cut videos into custom-duration clips (configurable overlap)
+3. **Auto-Subtitles**: Generate and overlay subtitles using FFmpeg
+4. **Aspect Ratio Conversion**: Convert to iPhone format (9:16) with blur/solid padding options
+5. **Split-Screen**: Overlay/combine videos (vertical, horizontal, overlay layouts)
+6. **Real-Time Progress**: WebSocket-based live updates on processing status
+7. **Retry/Cancel**: Failed jobs can be retried, pending jobs can be cancelled
+8. **Processing History**: Track all completed/failed jobs with durations and sizes
 
-## Current Focus
+## API Usage for AI Automation
+AI systems can automate video editing by:
+- POST `/api/upload` - Upload video files with operations JSON
+- POST `/api/process` - Process single video with specified operations
+- POST `/api/batch` - Queue multiple videos as a batch job
+- GET `/api/status` - Get queue stats and job statuses
+- DELETE `/api/process?jobId=X` - Cancel a job
+- POST `/api/retry?jobId=X` - Retry a failed job
 
-The template is ready. Next steps depend on user requirements:
+## Known Limitations
+- FFmpeg must be installed on the host system (or FFMPEG_PATH set)
+- Large file uploads limited by server/memory constraints
+- WebSocket connections may need reconnection handling in production
+- Processing manager uses polling for status updates (could be optimized)
 
-1. What type of application to build
-2. What features are needed
-3. Design/branding preferences
+## Testing
+All quality checks passing:
+- ✅ `bun run lint` - No errors
+- ✅ `bun run typecheck` - No errors  
+- ✅ `bun run build` - Successful production build
 
-## Quick Start Guide
-
-### To add a new page:
-
-Create a file at `src/app/[route]/page.tsx`:
-```tsx
-export default function NewPage() {
-  return <div>New page content</div>;
-}
-```
-
-### To add components:
-
-Create `src/components/` directory and add components:
-```tsx
-// src/components/ui/Button.tsx
-export function Button({ children }: { children: React.ReactNode }) {
-  return <button className="px-4 py-2 bg-blue-600 text-white rounded">{children}</button>;
-}
-```
-
-### To add a database:
-
-Follow `.kilocode/recipes/add-database.md`
-
-### To add API routes:
-
-Create `src/app/api/[route]/route.ts`:
-```tsx
-import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ message: "Hello" });
-}
-```
-
-## Available Recipes
-
-| Recipe | File | Use Case |
-|--------|------|----------|
-| Add Database | `.kilocode/recipes/add-database.md` | Data persistence with Drizzle + SQLite |
-
-## Pending Improvements
-
-- [ ] Add more recipes (auth, email, etc.)
-- [ ] Add example components
-- [ ] Add testing setup recipe
-
-## Session History
-
-| Date | Changes |
-|------|---------|
-| Initial | Template created with base setup |
+## Future Enhancements
+- Database persistence for job history
+- User authentication and multi-tenant support
+- Advanced subtitle styling and positioning
+- Audio processing (volume, mixing, filters)
+- Template system for common workflows
+- Export presets for different platforms
