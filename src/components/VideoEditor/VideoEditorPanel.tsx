@@ -9,6 +9,23 @@ export function VideoEditorPanel() {
   const [aspectRatioConfig, setAspectRatioConfig] = useState<AspectRatioConfig>({ ratio: '9:16' });
   const [splitScreenConfig, setSplitScreenConfig] = useState<SplitScreenConfig>({ secondaryVideo: '', layout: 'vertical' });
   const [subtitleConfig, setSubtitleConfig] = useState<SubtitleConfig>({ language: 'eng' });
+  const [primaryVideo, setPrimaryVideo] = useState<File | null>(null);
+  const [secondaryVideo, setSecondaryVideo] = useState<File | null>(null);
+
+  const handlePrimaryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && (file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i))) {
+      setPrimaryVideo(file);
+    }
+  };
+
+  const handleSecondaryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && (file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i))) {
+      setSecondaryVideo(file);
+    }
+  };
+
 
   const handleAddOperation = (type: VideoOperation['type']) => {
     let params = {};
@@ -38,7 +55,47 @@ export function VideoEditorPanel() {
         Video Editing Tools
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="mb-6 p-4 bg-gray-700/30 rounded-lg border border-gray-600">
+        <h3 className="text-md font-medium text-white mb-3 flex items-center gap-2">
+          <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16h8m-4-4v8m-8-4h8m-8-8v8m-4-4h16" />
+          </svg>
+          Split-Screen Videos (Primary Top / Secondary Bottom)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border-2 border-dashed border-green-500/30 rounded-lg p-4 hover:border-green-500/50 transition-colors">
+            <label className="cursor-pointer flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19l11-11 5 5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5l6 0" />
+                </svg>
+              </div>
+              <span className="text-sm font-medium text-green-400">Primary Video (Top)</span>
+              <span className="text-xs text-gray-400">Appears above</span>
+              <input type="file" accept="video/*" onChange={handlePrimaryUpload} className="hidden" />
+            </label>
+            {primaryVideo && <p className="text-xs text-green-400 mt-1 truncate">{primaryVideo.name}</p>}
+          </div>
+          <div className="border-2 border-dashed border-blue-500/30 rounded-lg p-4 hover:border-blue-500/50 transition-colors">
+            <label className="cursor-pointer flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 5l-7 7-7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5l0 14" />
+                </svg>
+              </div>
+              <span className="text-sm font-medium text-blue-400">Secondary Video (Bottom)</span>
+              <span className="text-xs text-gray-400">Appears below</span>
+              <input type="file" accept="video/*" onChange={handleSecondaryUpload} className="hidden" />
+            </label>
+            {secondaryVideo && <p className="text-xs text-blue-400 mt-1 truncate">{secondaryVideo.name}</p>}
+          </div>
+        </div>
+        {primaryVideo && secondaryVideo && <p className="text-xs text-green-400 mt-2">Both uploaded - ready for split-screen!</p>}
+      </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600 hover:border-blue-500 transition-colors">
           <h3 className="font-medium text-white mb-3">Smart Clipping</h3>
           <p className="text-sm text-gray-400 mb-3">Split video into clips</p>
