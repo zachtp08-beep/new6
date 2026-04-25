@@ -13,11 +13,13 @@ A comprehensive Next.js web application that serves as an automated video editin
 - ✅ Professional dark-mode UI with Tailwind CSS
 - ✅ TypeScript type safety throughout
 - ✅ All builds passing (lint, typecheck, build)
+- ✅ **NEW** Completed Videos page at `/completed` with filterable job history
+- ✅ **NEW** `/api/jobs` endpoint for fetching job history with status filters
 
 ## Architecture
 
 ### Backend (Server-Side)
-- **API Routes**: `/api/upload`, `/api/process`, `/api/batch`, `/api/status`, `/api/retry`
+- **API Routes**: `/api/upload`, `/api/process`, `/api/batch`, `/api/status`, `/api/retry`, `/api/jobs`
 - **Job Queue**: Concurrent processing with priority, retry logic, WebSocket notifications
 - **FFmpeg Processor**: Clip videos, add subtitles, convert aspect ratios (9:16 for iPhone), split-screen layouts
 - **Storage**: File upload handling with UUID-based naming, organized directories
