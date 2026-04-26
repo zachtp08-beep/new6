@@ -11,12 +11,14 @@ export function VideoEditorPanel() {
   const [subtitleConfig, setSubtitleConfig] = useState<SubtitleConfig>({ language: 'eng' });
   const [primaryVideo, setPrimaryVideo] = useState<File | null>(null);
   const [secondaryVideo, setSecondaryVideo] = useState<File | null>(null);
+  const [primaryVideoUrl, setPrimaryVideoUrl] = useState<string>('');
+  const [secondaryVideoUrl, setSecondaryVideoUrl] = useState<string>('');
   const [operations, setOperations] = useState<VideoOperation[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processResult, setProcessResult] = useState<{ success: boolean; jobId?: string; error?: string } | null>(null);
 
   const handleAddOperation = (type: VideoOperation['type']) => {
-    let params = {};
+    let params: any = {};
     switch (type) {
       case 'clip':
         params = clipConfig;
@@ -25,7 +27,10 @@ export function VideoEditorPanel() {
         params = aspectRatioConfig;
         break;
       case 'split-screen':
-        params = splitScreenConfig;
+        params = {
+          ...splitScreenConfig,
+          secondaryVideo: secondaryVideoUrl
+        };
         break;
       case 'subtitles':
         params = subtitleConfig;
@@ -36,18 +41,29 @@ export function VideoEditorPanel() {
     window.dispatchEvent(new CustomEvent('addOperation', { detail: { type, params } }));
   };
 
-  const handlePrimaryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePrimaryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && (file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i))) {
       setPrimaryVideo(file);
+      // Create a preview URL for the split-screen operation
+      const url = URL.createObjectURL(file);
+      setPrimaryVideoUrl(url);
     }
   };
 
-  const handleSecondaryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSecondaryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && (file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i))) {
       setSecondaryVideo(file);
+      // Create a preview URL for the split-screen operation
+      const url = URL.createObjectURL(file);
+      setSecondaryVideoUrl(url);
     }
+  };
+
+  const cleanupUrls = () => {
+    if (primaryVideoUrl) URL.revokeObjectURL(primaryVideoUrl);
+    if (secondaryVideoUrl) URL.revokeObjectURL(secondaryVideoUrl);
   };
 
   const handleStartProcessing = async () => {
@@ -64,6 +80,9 @@ export function VideoEditorPanel() {
     try {
       const formData = new FormData();
       formData.append('file', primaryVideo);
+      if (secondaryVideo && operations.some(op => op.type === 'split-screen')) {
+        formData.append('secondaryFile', secondaryVideo);
+      }
       formData.append('operations', JSON.stringify(operations));
       const uploadRes = await fetch('/api/upload', {
         method: 'POST',

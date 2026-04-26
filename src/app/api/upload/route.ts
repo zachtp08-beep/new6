@@ -12,6 +12,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const secondaryFile = formData.get('secondaryFile') as File;
     const operationsStr = formData.get('operations') as string;
     const batchId = formData.get('batchId') as string;
 
@@ -26,10 +27,35 @@ export async function POST(request: Request): Promise<Response> {
 
     const storedFile = await fileStorage.saveUploadedFile(buffer, originalName, mimeType);
 
+    let storedSecondaryFile = null;
+    if (secondaryFile) {
+      const secondaryBytes = await secondaryFile.arrayBuffer();
+      const secondaryBuffer = Buffer.from(secondaryBytes);
+      storedSecondaryFile = await fileStorage.saveUploadedFile(
+        secondaryBuffer,
+        secondaryFile.name,
+        secondaryFile.type
+      );
+    }
+
     let operations: VideoOperation[] = [];
     if (operationsStr) {
       try {
         operations = JSON.parse(operationsStr);
+        if (storedSecondaryFile) {
+          operations = operations.map((op: VideoOperation) => {
+            if (op.type === 'split-screen') {
+              return {
+                ...op,
+                params: {
+                  ...op.params,
+                  secondaryVideo: storedSecondaryFile.path
+                }
+              };
+            }
+            return op;
+          });
+        }
       } catch (err) {
         return NextResponse.json({ error: 'Invalid operations JSON' }, { status: 400 });
       }
@@ -40,10 +66,17 @@ export async function POST(request: Request): Promise<Response> {
       file: storedFile
     };
 
+    if (storedSecondaryFile) {
+      response.secondaryFile = storedSecondaryFile;
+    }
+
     if (operations.length > 0) {
-      const videoJob = await processingManager.createVideoJob(originalName, storedFile.path, operations);
-      response.jobId = videoJob.id;
-      response.status = videoJob.status;
+      const result = await processingManager.processVideo(storedFile.path, operations);
+      response.jobId = result.jobId;
+      response.status = result.success ? 'completed' : 'failed';
+      if (!result.success) {
+        response.error = result.error;
+      }
     }
 
     if (batchId) {
