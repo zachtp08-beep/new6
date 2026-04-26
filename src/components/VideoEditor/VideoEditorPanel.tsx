@@ -159,6 +159,26 @@ export function VideoEditorPanel() {
               </button>
             )}
           </div>
+          <button
+            onClick={() => {
+              if (primaryVideoLink) {
+                alert('Please clear the current URL before adding a new one');
+                return;
+              }
+              const url = prompt('Enter video URL:');
+              if (url) {
+                try {
+                  new URL(url);
+                  setPrimaryVideoLink(url);
+                } catch {
+                  alert('Invalid URL format. Please enter a valid URL (e.g., https://example.com/video.mp4)');
+                }
+              }
+            }}
+            className="w-full mt-2 bg-gray-700/50 border border-gray-600/50 hover:border-green-500/50 hover:bg-green-500/10 text-green-400 px-4 py-2 rounded text-sm transition-colors"
+          >
+            Add Link
+          </button>
           {primaryVideo && <p className="text-xs text-green-400 truncate">{primaryVideo.name}</p>}
           {primaryVideoLink && <p className="text-xs text-green-400 truncate">{primaryVideoLink}</p>}
         </div>
@@ -193,6 +213,26 @@ export function VideoEditorPanel() {
               </button>
             )}
           </div>
+          <button
+            onClick={() => {
+              if (secondaryVideoLink) {
+                alert('Please clear the current URL before adding a new one');
+                return;
+              }
+              const url = prompt('Enter video URL:');
+              if (url) {
+                try {
+                  new URL(url);
+                  setSecondaryVideoLink(url);
+                } catch {
+                  alert('Invalid URL format. Please enter a valid URL (e.g., https://example.com/video.mp4)');
+                }
+              }
+            }}
+            className="w-full mt-2 bg-gray-700/50 border border-gray-600/50 hover:border-blue-500/50 hover:bg-blue-500/10 text-blue-400 px-4 py-2 rounded text-sm transition-colors"
+          >
+            Add Link
+          </button>
           {secondaryVideo && <p className="text-xs text-blue-400 truncate">{secondaryVideo.name}</p>}
           {secondaryVideoLink && <p className="text-xs text-blue-400 truncate">{secondaryVideoLink}</p>}
         </div>
