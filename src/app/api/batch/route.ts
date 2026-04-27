@@ -1,17 +1,23 @@
 import { NextResponse } from 'next/server';
 import { processingManager } from '@/lib/utils/ProcessingManager';
 import { VideoOperation } from '@/types';
+import { createBatchJobSchema } from '@/lib/validation/schemas';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json();
-    const { name, videoJobs } = body;
-
-    if (!name || !Array.isArray(videoJobs) || videoJobs.length === 0) {
-      return NextResponse.json({ error: 'name and non-empty videoJobs array required' }, { status: 400 });
+    
+    const validationResult = createBatchJobSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Invalid request body', 
+        details: validationResult.error.errors 
+      }, { status: 400 });
     }
+
+    const { name, videoJobs } = validationResult.data;
 
     const batchJob = await processingManager.createBatchJob(name, videoJobs);
 

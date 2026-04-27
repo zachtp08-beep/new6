@@ -28,7 +28,7 @@ export interface BatchJob {
 
 export interface VideoOperation {
   type: OperationType;
-  params: Record<string, any>;
+  params: ClipConfig | SubtitleConfig | AspectRatioConfig | SplitScreenConfig | CompressConfig | MergeConfig;
   completed?: boolean;
 }
 
@@ -75,6 +75,8 @@ export interface ClipConfig {
   clipDuration: number;
   overlap?: number;
   format?: 'mp4' | 'webm' | 'mov';
+  startTime?: number;
+  endTime?: number;
 }
 
 export interface AspectRatioConfig {
@@ -88,6 +90,19 @@ export interface SplitScreenConfig {
   layout: 'horizontal' | 'vertical' | 'overlay';
   position?: 'left' | 'right' | 'top' | 'bottom';
   ratio?: number;
+}
+
+export interface CompressConfig {
+  bitrate?: string;
+  crf?: number;
+  preset?: 'ultrafast' | 'fast' | 'medium' | 'slow' | 'veryslow';
+  codec?: 'libx264' | 'libx265' | 'libvpx-vp9';
+}
+
+export interface MergeConfig {
+  videos: string[];
+  transition?: 'none' | 'fade' | 'wipe';
+  transitionDuration?: number;
 }
 
 export interface ProcessingJob {

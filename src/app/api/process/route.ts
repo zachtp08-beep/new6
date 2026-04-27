@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { processingManager } from '@/lib/utils/ProcessingManager';
 import { VideoOperation } from '@/types';
+import { createVideoJobSchema } from '@/lib/validation/schemas';
 import fs from 'fs-extra';
 
 export const runtime = 'nodejs';
@@ -9,15 +10,16 @@ export const maxDuration = 600;
 export async function POST(request: Request): Promise<Response> {
   try {
     const body = await request.json();
-    const { inputPath, operations, batchId } = body;
-
-    if (!inputPath) {
-      return NextResponse.json({ error: 'inputPath is required' }, { status: 400 });
+    
+    const validationResult = createVideoJobSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Invalid request body', 
+        details: validationResult.error.errors 
+      }, { status: 400 });
     }
 
-    if (!Array.isArray(operations) || operations.length === 0) {
-      return NextResponse.json({ error: 'operations array is required and cannot be empty' }, { status: 400 });
-    }
+    const { inputPath, operations, batchId } = validationResult.data;
 
     if (!(await fs.pathExists(inputPath))) {
       return NextResponse.json({ error: 'Input file not found' }, { status: 404 });
